@@ -16,20 +16,20 @@ Feature: Contact Management
     And the response should contain a list of all contacts
 
   Scenario: Read a specific contact
-    Given there is an existing contact with ID 6 in the database
-    When I make a GET request to "/contacts/6" endpoint
+    Given there is an existing contact with ID 1 in the database
+    When I make a GET request to "/contacts/1" endpoint
     Then I should receive a response with status code 200
-    And the response should contain details of the contact with ID 6
+    And the response should contain details of the contact with ID 1
 
   Scenario: Update a contact
-    Given there is an existing contact with ID 6 in the database
+    Given there is an existing contact with ID 1 in the database
     And I want to update the contact with new phone number "09390468822"
-    When I make a PUT request to "/contacts/6" endpoint
+    When I make a PUT request to "/contacts/1" endpoint
     Then I should receive a response with status code 200
-    And the response should contain updated details of the contact with ID 6
+    And the response should contain updated details of the contact with ID 1
 
   Scenario: Delete a contact
-    Given there is an existing contact with ID 6 in the database
-    When I make a DELETE request to "/contacts/6" endpoint
+    Given there is an existing contact with ID 1 in the database
+    When I make a DELETE request to "/contacts/1" endpoint
     Then I should receive a response with status code 204
-    And the contact with ID 6 should be removed from the database
+    And the contact with ID 1 should be removed from the database
