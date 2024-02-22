@@ -129,6 +129,5 @@ cython_debug/
 
 *.zip
 *.sqlite3
-/.idea
-*.db
+/.idea/
 *.db
