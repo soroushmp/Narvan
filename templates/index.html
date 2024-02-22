@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PhoneBook</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="{{ url_for('static', path='css/sweetalert2.min.css') }}" rel="stylesheet">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2 py-3">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CreateContactModal">
+                Create New Contact
+            </button>
+        </div>
+        <table class="table table-responsive table-primary">
+            <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Phone Number</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            {% for contact in contacts %}
+            <tr>
+                <td>{{ contact.first_name }}</td>
+                <td>{{ contact.last_name }}</td>
+                <td>{{ contact.phone_number }}</td>
+                <td><a class="edit_button" href="{{ url_for('update_contact', contact_id=contact.id) }}"
+                       data-bs-toggle="modal" data-bs-target="#EditContactModal">Edit</a></td>
+                <td><a class="delete_button" href="{{ url_for('delete_contact', contact_id=contact.id) }}"
+                       data-method="Delete">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+
+<div class="modal fade" id="CreateContactModal" tabindex="-1" aria-labelledby="CreateContactModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" action="{{ url_for('create_contact') }}" method="post"
+              onsubmit="return createContact(this)">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="CreateContactModalLabel">Add Contact</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="first_name" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="first_name" required name="first_name">
+                </div>
+                <div class="mb-3">
+                    <label for="last_name" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="last_name" required name="last_name">
+                </div>
+                <div class="mb-3">
+                    <label for="phone_number" class="form-label">Phone Number</label>
+                    <input type="text" class="form-control" id="phone_number" placeholder="09123456789" required
+                           name="phone_number">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade" id="EditContactModal" tabindex="-1" aria-labelledby="EditContactModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" id="edit_contact_form" onsubmit="return updateContact(this)">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="EditContactModalLabel">Edit Contact</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="first_name_edit" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="first_name_edit" required name="first_name">
+                </div>
+                <div class="mb-3">
+                    <label for="last_name_edit" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="last_name_edit" required name="last_name">
+                </div>
+                <div class="mb-3">
+                    <label for="phone_number_edit" class="form-label">Phone Number</label>
+                    <input type="text" class="form-control" id="phone_number_edit" placeholder="09123456789" required
+                           name="phone_number">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".delete_button").click(function () {
+            $.ajax({
+                url: $(this).attr('href'),
+                type: $(this).attr('data-method'),
+                success: function (data) {
+                    Swal.fire({
+                        title: 'با موفقیت انجام شد',
+                        text: 'مخاطب با موفقیت حذف شد',
+                        type: 'success',
+                        confirmButtonClass: 'btn btn-success',
+                        buttonsStyling: !1
+                    }).then(function () {
+                        window.location.reload();
+                    })
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire({
+                        title: 'نا موفق',
+                        text: message,
+                        type: 'error',
+                        confirmButtonClass: 'btn btn-success',
+                        buttonsStyling: !1
+                    })
+                }
+            });
+            return false;
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $(".edit_button").click(function () {
+            const clicked_contact = $(this)
+            $.ajax({
+                url: $(this).attr('href'),
+                type: 'get',
+                success: function (data) {
+                    $("#first_name_edit").val(data.first_name)
+                    $("#last_name_edit").val(data.last_name)
+                    $("#phone_number_edit").val(data.phone_number)
+                    $("#edit_contact_form").attr('action', clicked_contact.attr("href"))
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr)
+                    console.log(status)
+                    console.log(error)
+                }
+            });
+            return false;
+        });
+    });
+</script>
+<script src="{{ url_for('static', path='js/sweetalert2.all.min.js') }}"></script>
+<script>
+    function createContact(oFormElement) {
+        const formData = new FormData(oFormElement);
+        const jsonObject = {};
+        formData.forEach(function (value, key) {
+            jsonObject[key] = value;
+        });
+        const jsonBody = JSON.stringify(jsonObject);
+        const xhr = new XMLHttpRequest()
+        xhr.onload = function () {
+            const jsonResponse = JSON.parse(xhr.responseText)
+            if (xhr.status === 201) {
+                Swal.fire({
+                    title: 'با موفقیت انجام شد',
+                    text: 'مخاطب با موفقیت ثبت شد',
+                    type: 'success',
+                    confirmButtonClass: 'btn btn-success',
+                    buttonsStyling: !1
+                }).then(function () {
+                    window.location.reload();
+                })
+            } else if (xhr.status === 422) {
+                let message = '';
+                for (var i = 0; i < jsonResponse.detail.length; i++) {
+                    message += jsonResponse.detail[i].msg + " || ";
+                }
+                Swal.fire({
+                    title: 'نا موفق',
+                    text: message,
+                    type: 'error',
+                    confirmButtonClass: 'btn btn-success',
+                    buttonsStyling: !1
+                })
+            } else {
+                Swal.fire({
+                    title: 'نا موفق',
+                    text: jsonResponse.detail,
+                    type: 'error',
+                    confirmButtonClass: 'btn btn-success',
+                    buttonsStyling: !1
+                })
+
+            }
+        } // success case
+
+        xhr.open(oFormElement.method, oFormElement.action, true)
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(jsonBody)
+        return false
+    }
+
+    function updateContact(oFormElement) {
+        const formData = new FormData(oFormElement);
+        const jsonObject = {};
+        formData.forEach(function (value, key) {
+            jsonObject[key] = value;
+        });
+        const jsonBody = JSON.stringify(jsonObject);
+        const xhr = new XMLHttpRequest()
+        xhr.onload = function () {
+            const jsonResponse = JSON.parse(xhr.responseText)
+            if (xhr.status === 200) {
+                Swal.fire({
+                    title: 'با موفقیت انجام شد',
+                    text: 'مخاطب با موفقیت ویرایش شد',
+                    type: 'success',
+                    confirmButtonClass: 'btn btn-success',
+                    buttonsStyling: !1
+                }).then(function () {
+                    window.location.reload();
+                })
+            } else if (xhr.status === 422) {
+                let message = '';
+                for (var i = 0; i < jsonResponse.detail.length; i++) {
+                    message += jsonResponse.detail[i].msg + " || ";
+                }
+                Swal.fire({
+                    title: 'نا موفق',
+                    text: message,
+                    type: 'error',
+                    confirmButtonClass: 'btn btn-success',
+                    buttonsStyling: !1
+                })
+            } else {
+                Swal.fire({
+                    title: 'نا موفق',
+                    text: jsonResponse.detail,
+                    type: 'error',
+                    confirmButtonClass: 'btn btn-success',
+                    buttonsStyling: !1
+                })
+
+            }
+        } // success case
+
+        xhr.open('PUT', oFormElement.action, true)
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(jsonBody)
+        return false
+    }
+</script>
+</body>
+</html>
